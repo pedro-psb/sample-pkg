@@ -1,3 +1,5 @@
+name: release
+
 on:
   workflow_dispatch:
     inputs:
@@ -21,8 +23,9 @@ jobs:
       - name: Generate CHANGELOG
         run: echo "Updating changelog"
       - name: Update version references
-        run: echo "Updating"
+        run: echo "Updating version references"
       - name: Create release commit
+        run:  echo "Creating release commit"
 
   publish-pypa:
     name: Publishes to PyPA
