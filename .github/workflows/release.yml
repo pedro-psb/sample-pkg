@@ -20,6 +20,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Check last run of main.yml on this commit
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           RESULT=$(gh api \
             -H "Accept: application/vnd.github+json" \

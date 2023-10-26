@@ -32,6 +32,8 @@ jobs:
       - uses: actions/setup-python@v3
       - name: Upgrade PIP
         run: pip install --user --upgrade pip
+      - name: Build deps
+        run: pip install --user setuptools
       - name: Test installation
         run: |
           python setup.py install
