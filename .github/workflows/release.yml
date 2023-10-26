@@ -19,7 +19,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Check last run of main.yml on this commit
+      - name: Api call
+        id: api-result
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -27,7 +28,11 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
             /repos/pedro-psb/sample-pkg/actions/workflows/main.yml/runs)
+          echo "::set-output name=result::$RESULT"
 
+      - name: Check logic status and commit
+        run: |
+          RESULT=${{ steps.api-result.outputs.result }}
           STATUS=$(jq '.workflow_runs[0].status' <<< $RESULT)
           COMMIT_SHA=$(jq '.workflow_runs[0].head_sha' <<< $RESULT)
 
