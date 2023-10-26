@@ -32,8 +32,8 @@ jobs:
           COMMIT_SHA=$(jq '.workflow_runs[0].head_sha' <<< $RESULT)
 
           THIS_COMMIT=$(git rev-parse HEAD)
-          if [ $STATUS != 'completed']; then exit 1
-          if [ $COMMIT_SHA != $THIS_COMMIT ]; then exit 1
+          if [ $STATUS != 'completed']; then exit 1; fi
+          if [ $COMMIT_SHA != $THIS_COMMIT ]; then exit 1; fi
 
   build-dist:
     name: Build python distribution
