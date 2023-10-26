@@ -32,15 +32,15 @@ jobs:
             > gh-api-call-result
           echo "Done"
 
-          STATUS=$(jq '.workflow_runs[0].status' gh-api-call-result)
-          COMMIT_SHA=$(jq '.workflow_runs[0].head_sha' gh-api-call-result)
-          rm gh-api-call-result
+          STATUS=$(jq --raw-output '.workflow_runs[0].status' gh-api-call-result)
+          COMMIT_SHA=$(jq --raw-output '.workflow_runs[0].head_sha' gh-api-call-result)
           THIS_COMMIT=$(git rev-parse HEAD)
 
           echo "STATUS=$STATUS"
           echo "COMMIT_SHA=$COMMIT_SHA"
           echo "THIS_COMMIT=$THIS_COMMIT"
 
+          rm gh-api-call-result
           if [ "$STATUS" != "completed" ]; then
             echo "Error: Last CI workflow has not passed yet"
             echo "STATUS $STATUS != completed"
