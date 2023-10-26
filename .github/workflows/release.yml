@@ -38,16 +38,17 @@ jobs:
           THIS_COMMIT=$(git rev-parse HEAD)
 
           echo "STATUS=$STATUS"
-          echo "COMMIT_SHA=$COMIT_SHA"
+          echo "COMMIT_SHA=$COMMIT_SHA"
           echo "THIS_COMMIT=$THIS_COMMIT"
 
-          if [ $STATUS != 'completed' ]; then
-            echo "Last CI workflow has not passed yet"
+          if [ "$STATUS" != "completed" ]; then
+            echo "Error: Last CI workflow has not passed yet"
+            echo "STATUS $STATUS != completed"
             exit 1
           fi
 
           if [ $COMMIT_SHA != $THIS_COMMIT ]; then 
-            echo "Last passing CI does not refer to the last commit"
+            echo "Error: Last passing CI does not refer to the last commit"
             echo "The implementation of this to specify that we mean branch 'main'"
             exit 1
           fi
