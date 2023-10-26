@@ -14,18 +14,37 @@ on:
           - major
 
 jobs:
-  build-dist:
-    name: Build python distribution
+  check-test-status:
+    name: Check the last test was run succesfully
     runs-on: ubuntu-latest
     steps:
-      - name: Build distribution
-        run: echo "Building distribution files"
-      - name: Generate CHANGELOG
-        run: echo "Updating changelog"
-      - name: Update version references
-        run: echo "Updating version references"
-      - name: Create release commit
-        run:  echo "Creating release commit"
+      - uses: actions/checkout@v3
+      - name: Check last run of main.yml on this commit
+        run: |
+          RESULT=$(gh api \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            /repos/pedro-psb/sample-pkg/actions/workflows/main.yml/runs)
+
+          STATUS=$(jq '.workflow_runs[0].status' <<< $RESULT)
+          COMMIT_SHA=$(jq '.workflow_runs[0].head_sha' <<< $RESULT)
+
+          THIS_COMMIT=$(git rev-parse HEAD)
+          if [ $STATUS != 'completed']; then exit 1
+          if [ $COMMIT_SHA != $THIS_COMMIT ]; then exit 1
+
+  build-dist:
+  name: Build python distribution
+  runs-on: ubuntu-latest
+  steps:
+    - name: Build distribution
+      run: echo "Building distribution files"
+    - name: Generate CHANGELOG
+      run: echo "Updating changelog"
+    - name: Update version references
+      run: echo "Updating version references"
+    - name: Create release commit
+      run:  echo "Creating release commit"
 
   publish-pypa:
     name: Publishes to PyPA
