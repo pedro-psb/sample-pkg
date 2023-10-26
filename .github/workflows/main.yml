@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+    paths-ignore:
+      - "docs/**"
+      - "mkdocs.yml"
+  pull_request:
+    branches: [master]
+    paths-ignore:
+      - "docs/**"
+      - "mkdocs.yml"
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# When a Push is made on an existing branch/PR, 
+# it cancells any pre running job and
+# let only the latest executing
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+
+jobs:
+  pkg-install-test:
+    name: Test the installation of the package
+    runs-on: ubuntu-latest
+    steps:
+      - use: actions/checkout@v3
+      - use: actions/setup-python@v3
+      - name: Upgrade PIP
+        run: pip install --user --upgrade pip
+      - name: Test installation
+        run: |
+          python setup.py install
+          python -m samplepkg.main
+
+  unit-test:
+    name: Unit Test Suite
+    needs: pkg-install-test
+    runs-on: ubuntu-latest
+    steps:
+      - use: actions/checkout@v3
+      - use: actions/setup-python@v3
+      - name: Upgrade pip
+        run: pip install --user --upgrade pip
+      - name: Install package
+        run: make ciinstall
+      - name: Run test suite
+        run: make test
+
+  checkpoint:
+    needs:
+      - pkg-install-test
+      - unit-test
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Checks have passed"
+

@@ -1,0 +1,43 @@
+on:
+  workflow_dispatch:
+    inputs:
+      semver-type:
+        description: 'The type of the release (patch, minor, major)'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+jobs:
+  build-dist:
+    name: Build python distribution
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build distribution
+        run: echo "Building distribution files"
+      - name: Generate CHANGELOG
+        run: echo "Updating changelog"
+      - name: Update version references
+        run: echo "Updating"
+      - name: Create release commit
+
+  publish-pypa:
+    name: Publishes to PyPA
+    runs-on: ubuntu-latest
+    needs: build-dist
+    steps:
+      - name: "Upload to Pypi"
+        run: echo "Uploading to Pypi"
+    
+  create-gh-release:
+    name: Create GitHub release
+    runs-on: ubuntu-latest
+    needs: build-dists
+    steps:
+      - name: "Create GH release"
+        run: echo "Creating GH release"
+
+          
