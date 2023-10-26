@@ -21,7 +21,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Check last run of main.yml on this commit
         env:
-          GH_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           RESULT=$(gh api \
             -H "Accept: application/vnd.github+json" \
@@ -37,6 +37,7 @@ jobs:
 
   build-dist:
     name: Build python distribution
+    needs: check-test-status
     runs-on: ubuntu-latest
     steps:
       - name: Build distribution
