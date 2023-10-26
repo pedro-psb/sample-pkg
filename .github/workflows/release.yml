@@ -24,17 +24,14 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          RESULT=$(gh api \
+          gh api \
             -H "Accept: application/vnd.github+json" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
-            /repos/pedro-psb/sample-pkg/actions/workflows/main.yml/runs)
-          echo "::set-output name=result::$RESULT"
-
-      - name: Check logic status and commit
-        run: |
-          RESULT=${{ steps.api-result.outputs.result }}
-          STATUS=$(jq '.workflow_runs[0].status' <<< $RESULT)
-          COMMIT_SHA=$(jq '.workflow_runs[0].head_sha' <<< $RESULT)
+            /repos/pedro-psb/sample-pkg/actions/workflows/main.yml/runs \
+            > gh-api-call-result
+          STATUS=$(jq '.workflow_runs[0].status' gh-api-call-result)
+          COMMIT_SHA=$(jq '.workflow_runs[0].head_sha' gh-api-call-result)
+          rm gh-api-call-result
 
           THIS_COMMIT=$(git rev-parse HEAD)
           if [ $STATUS != 'completed' ]; then exit 1; fi
