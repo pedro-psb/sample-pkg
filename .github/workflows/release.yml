@@ -24,18 +24,33 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          echo "Fetching last run on main.yml from gh API"
           gh api \
             -H "Accept: application/vnd.github+json" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
             /repos/pedro-psb/sample-pkg/actions/workflows/main.yml/runs \
             > gh-api-call-result
+          echo "Done"
+
           STATUS=$(jq '.workflow_runs[0].status' gh-api-call-result)
           COMMIT_SHA=$(jq '.workflow_runs[0].head_sha' gh-api-call-result)
           rm gh-api-call-result
-
           THIS_COMMIT=$(git rev-parse HEAD)
-          if [ $STATUS != 'completed' ]; then exit 1; fi
-          if [ $COMMIT_SHA != $THIS_COMMIT ]; then exit 1; fi
+
+          echo "STATUS=$STATUS"
+          echo "COMMIT_SHA=$COMIT_SHA"
+          echo "THIS_COMMIT=$THIS_COMMIT"
+
+          if [ $STATUS != 'completed' ]; then
+            echo "Last CI workflow has not passed yet"
+            exit 1
+          fi
+
+          if [ $COMMIT_SHA != $THIS_COMMIT ]; then 
+            echo "Last passing CI does not refer to the last commit"
+            echo "The implementation of this to specify that we mean branch 'main'"
+            exit 1
+          fi
 
   build-dist:
     name: Build python distribution
