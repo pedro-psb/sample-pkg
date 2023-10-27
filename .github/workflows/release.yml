@@ -4,14 +4,13 @@ on:
   workflow_dispatch:
     inputs:
       semver-type:
-        description: 'The type of the release (patch, minor, major)'
+        description: 'The type of the release'
         required: true
         default: 'patch'
         type: choice
         options:
           - patch
           - minor
-          - major
 
 jobs:
   check-test-status:
@@ -76,7 +75,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - run: chmod +x scripts/bump-version-refs
+      - run: chmod +x scripts/bump-version-refs.sh
       - name: Update version references
         run: scripts/bump-version-refs.sh
       - name: Generate CHANGELOG
@@ -87,7 +86,7 @@ jobs:
   publish-pypa:
     name: Publishes to PyPA
     runs-on: ubuntu-latest
-    needs: build-dist
+    needs: release-commit
     steps:
       - name: "Upload to Pypi"
         run: echo "Uploading to Pypi"
@@ -95,7 +94,7 @@ jobs:
   create-gh-release:
     name: Create GitHub release
     runs-on: ubuntu-latest
-    needs: build-dist
+    needs: release-commit
     steps:
       - name: "Create GH release"
         run: echo "Creating GH release"

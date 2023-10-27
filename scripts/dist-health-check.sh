@@ -1,13 +1,13 @@
 #!/bin/env bash
 
+set -euxo pipefail
 echo "Checking dist build health"
 
 python -m venv venv
 source venv/bin/activate
 for dist in dist/*; do
     pip install --quiet "${dist}"
-    dynaconf list --help 1>/dev/null
-    pip uninstall --quiet --yes dynaconf
+    python -m samplepkg.main 1>/dev/null
 done
 
 echo "Done"
