@@ -59,6 +59,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - run: chmod +x scripts/dist-health-check.sh
       - name: Build distribution
         run: make dist
       - name: Check dist health
@@ -75,6 +76,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - run: chmod +x scripts/bump-version-refs
       - name: Update version references
         run: scripts/bump-version-refs.sh
       - name: Generate CHANGELOG
