@@ -3,8 +3,8 @@ name: release
 on:
   workflow_dispatch:
     inputs:
-      semver-type:
-        description: 'The type of the release'
+      semver-bump:
+        description: 'The semver bump type'
         required: true
         default: 'patch'
         type: choice
@@ -75,8 +75,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Setup dependecies
+        run: pip install bump2version
       - run: chmod +x scripts/bump-version-refs.sh
       - name: Update version references
+        env:
+          NEXT_VERSION_BUMP: ${{ inputs.semver-bump }}
         run: scripts/bump-version-refs.sh
       - name: Generate CHANGELOG
         run: echo "Updating changelog"

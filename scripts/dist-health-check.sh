@@ -1,6 +1,6 @@
 #!/bin/env bash
 
-set -euxo pipefail
+set -euo pipefail
 echo "Checking dist build health"
 
 python -m venv venv
