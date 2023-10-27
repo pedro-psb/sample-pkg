@@ -58,12 +58,27 @@ jobs:
     needs: check-test-status
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
       - name: Build distribution
-        run: echo "Building distribution files"
+        run: make dist
+      - name: Check dist health
+        run: scripts/dist-health-check.sh
+      - name: Save dist files
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist-folder
+          path: dist
+
+  release-commit:
+    name: Create release commit with updated data
+    needs: build-dist
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Update version references
+        run: scripts/bump-version-refs.sh
       - name: Generate CHANGELOG
         run: echo "Updating changelog"
-      - name: Update version references
-        run: echo "Updating version references"
       - name: Create release commit
         run:  echo "Creating release commit"
 
